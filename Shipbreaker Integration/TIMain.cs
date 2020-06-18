@@ -13,6 +13,7 @@ using UnityEngine;
 using System.Reflection;
 using static BBI.Unity.Game.GameSession;
 using BBI;
+using Random = System.Random;
 
 namespace Shipbreaker_Integration
 {
@@ -26,8 +27,9 @@ namespace Shipbreaker_Integration
             HarmonyInstance.Create("com.theprogrammingturkey.HSSTwitchIntegration").PatchAll(Assembly.GetExecutingAssembly());
         }
 
-
+        private static Random random = new Random();
         public static ConcurrentQueue<RewardData> rewardsQueue = new ConcurrentQueue<RewardData>();
+        private static float barrelRollAmount = 0;
 
         [HarmonyPatch(typeof(Main), "LateUpdate")]
         class Patch
@@ -48,14 +50,32 @@ namespace Shipbreaker_Integration
                                 float.TryParse(reward.args[0], out forceMin);
                                 float forceMax;
                                 float.TryParse(reward.args[1], out forceMax);
-                               
+
                                 body.AddForce(UnityEngine.Random.onUnitSphere * (UnityEngine.Random.Range(forceMin, forceMax)));
                                 break;
+                            case "roll":
+                                float rollMin;
+                                float.TryParse(reward.args[0], out rollMin);
+                                float rollMax;
+                                float.TryParse(reward.args[1], out rollMax);
+
+                                barrelRollAmount = (float)random.NextDouble() * (rollMax - rollMin) + rollMax;
+                                barrelRollAmount *= NextBoolean() ? 1 : -1;
+                                break;
                             case "test":
-                                Player player = LynxPlayerController.Instance.Player;
-                                body.AddRelativeTorque(player.transform.forward * 25);
                                 break;
                         }
+                    }
+
+                    if (barrelRollAmount > 0.1 || barrelRollAmount < -0.1)
+                    {
+                        if (barrelRollAmount > 0)
+                            barrelRollAmount -= 0.01f;
+                        else
+                            barrelRollAmount += 0.01f;
+
+                        Player player = LynxPlayerController.Instance.Player;
+                        player.transform.RotateAround(player.transform.position, player.transform.forward, barrelRollAmount);
                     }
                 }
             }
@@ -145,6 +165,11 @@ namespace Shipbreaker_Integration
 
                 }, token);
             }
+        }
+
+        private static bool NextBoolean()
+        {
+            return random.Next() > (Int32.MaxValue / 2);
         }
 
         public class RewardData
