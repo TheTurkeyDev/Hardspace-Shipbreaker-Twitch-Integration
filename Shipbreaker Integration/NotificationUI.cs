@@ -29,7 +29,6 @@ namespace Shipbreaker_Integration
                 typeof (NotificationUI)
             }));
             SceneManager.activeSceneChanged -= new UnityAction<Scene, Scene>(AttachWindow);
-            FileLog.Log("Notification UI Attached!");
         }
 
         public static void addChatMessage(string message)

@@ -14,6 +14,7 @@ using System.Reflection;
 using static BBI.Unity.Game.GameSession;
 using BBI;
 using Random = System.Random;
+using static BBI.Unity.Game.EquipmentController;
 
 namespace Shipbreaker_Integration
 {
@@ -22,7 +23,6 @@ namespace Shipbreaker_Integration
         public static void InitMod()
         {
             StartConnection();
-            FileLog.Log("Init Mod");
             SceneManager.activeSceneChanged += new UnityAction<Scene, Scene>(NotificationUI.AttachWindow);
             HarmonyInstance.Create("com.theprogrammingturkey.HSSTwitchIntegration").PatchAll(Assembly.GetExecutingAssembly());
         }
@@ -39,7 +39,9 @@ namespace Shipbreaker_Integration
                 GameSession gs = Main.Instance.CurrentGameSession;
                 if (gs != null && CurrentGameState == GameState.Gameplay)
                 {
+                    Player player = LynxPlayerController.Instance.Player;
                     Rigidbody body = LynxPlayerController.Instance.PlayerRigidbody;
+                    EquipmentController equipController = GameObject.Find("EquipmentController").GetComponent<EquipmentController>();
                     RewardData reward;
                     if (rewardsQueue.TryDequeue(out reward))
                     {
@@ -62,6 +64,19 @@ namespace Shipbreaker_Integration
                                 barrelRollAmount = (float)random.NextDouble() * (rollMax - rollMin) + rollMax;
                                 barrelRollAmount *= NextBoolean() ? 1 : -1;
                                 break;
+                            case "release":
+                                GrabController grab = Traverse.Create(equipController).Field("m_GrabController").GetValue() as GrabController;
+
+                                Traverse.Create(grab).Method("ReleaseGrab", grab.LeftHand).GetValue();
+                                break;
+                            case "Equip_toggle":
+                                Equipment toEquip = Equipment.CuttingTool;
+                                if (equipController.CurrentEquipment == Equipment.CuttingTool)
+                                    toEquip = Equipment.GrappleHook;
+
+                                Traverse.Create(equipController).Method("UnequipEquipment", equipController.CurrentEquipment).GetValue();
+                                Traverse.Create(equipController).Property("CurrentEquipment").SetValue(toEquip);
+                                break;
                             case "test":
                                 break;
                         }
@@ -74,7 +89,6 @@ namespace Shipbreaker_Integration
                         else
                             barrelRollAmount += 0.01f;
 
-                        Player player = LynxPlayerController.Instance.Player;
                         player.transform.RotateAround(player.transform.position, player.transform.forward, barrelRollAmount);
                     }
                 }
@@ -137,7 +151,6 @@ namespace Shipbreaker_Integration
 
                                         if (line != null)
                                         {
-                                            FileLog.Log("Packet: " + line);
                                             if (line.StartsWith("Action: "))
                                             {
                                                 string[] data = line.Substring(8).Split(' ');

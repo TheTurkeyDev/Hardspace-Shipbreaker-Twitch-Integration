@@ -38,6 +38,10 @@
     <Reference Include="BBI.Unity.Game">
       <HintPath>..\..\..\..\Apps\SteamLibrary\steamapps\common\Hardspace Shipbreaker\Shipbreaker_Data\Managed\BBI.Unity.Game.dll</HintPath>
     </Reference>
+    <Reference Include="InControl, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Apps\SteamLibrary\steamapps\common\Hardspace Shipbreaker\Shipbreaker_Data\Managed\InControl.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
