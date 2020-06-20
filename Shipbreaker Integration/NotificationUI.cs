@@ -1,5 +1,4 @@
 ﻿using BBI.Unity.Game;
-using Harmony;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,7 +9,6 @@ namespace Shipbreaker_Integration
 {
     class NotificationUI : MonoBehaviour
     {
-        private static Color backgroundColor = new Color(Color.gray.r, Color.gray.g, Color.gray.b, .9f);
         private static GUIStyle guiStyle = new GUIStyle();
 
         private static List<string> queue = new List<string>();
@@ -64,12 +62,9 @@ namespace Shipbreaker_Integration
                     width = 400f;
                     guiStyle.normal.textColor = Color.white;
                 }
-                Color oldColor = GUI.color;
-                GUI.color = backgroundColor;
-                GUI.Box(new Rect((Screen.width / 2) - 100, Screen.height / 2 - 50, width, 100f), "");
-                GUI.color = oldColor;
 
-                GUI.Label(new Rect((Screen.width / 2) - 100, Screen.height / 2 - 50, 400f, 100f), queue[0], guiStyle);
+                GUI.Box(new Rect((Screen.width / 2) - 200, 200, width, 100f), "");
+                GUI.Label(new Rect((Screen.width / 2) - 200, 200, 400f, 100f), queue[0], guiStyle);
 
                 if (timeIn / displayLength > 1)
                 {

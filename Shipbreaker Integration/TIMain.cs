@@ -69,7 +69,7 @@ namespace Shipbreaker_Integration
 
                                 Traverse.Create(grab).Method("ReleaseGrab", grab.LeftHand).GetValue();
                                 break;
-                            case "Equip_toggle":
+                            case "equip_toggle":
                                 Equipment toEquip = Equipment.CuttingTool;
                                 if (equipController.CurrentEquipment == Equipment.CuttingTool)
                                     toEquip = Equipment.GrappleHook;
@@ -78,6 +78,12 @@ namespace Shipbreaker_Integration
                                 Traverse.Create(equipController).Property("CurrentEquipment").SetValue(toEquip);
                                 break;
                             case "test":
+                                /*ExplosionSettings es = new ExplosionSettings();
+                                es.Radius = 75;
+                                es.DamageAffectsPlayer = false;
+                                es.ForceAffectsPlayer = true;
+                                es.Force = 5000;
+                                ExplosionHelper.DoExplosionAtPosition(player.transform.position + new Vector3(0, 50, 0), es);*/
                                 break;
                         }
                     }
